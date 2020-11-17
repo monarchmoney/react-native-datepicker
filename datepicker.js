@@ -397,7 +397,7 @@ class DatePicker extends Component {
                         display="spinner"
                         minimumDate={minDate && this.getDate(minDate)}
                         maximumDate={maxDate && this.getDate(maxDate)}
-                        onChange={this.onDateChange}
+                        onChange={(_, date) => this.onDateChange(date)}
                         minuteInterval={minuteInterval}
                         timeZoneOffsetInMinutes={timeZoneOffsetInMinutes ? timeZoneOffsetInMinutes : null}
                         style={[Style.datePicker, customStyles.datePicker]}

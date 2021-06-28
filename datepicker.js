@@ -259,42 +259,7 @@ class DatePicker extends Component {
       date: this.getDate()
     });
 
-    if (Platform.OS === 'ios') {
-      this.setModalVisible(true);
-    } else {
-
-      const {mode, androidMode, format = FORMATS[mode], minDate, maxDate, is24Hour = !format.match(/h|a/)} = this.props;
-
-      // 选日期
-      if (mode === 'date') {
-        DatePickerAndroid.open({
-          date: this.state.date,
-          minDate: minDate && this.getDate(minDate),
-          maxDate: maxDate && this.getDate(maxDate),
-          mode: androidMode
-        }).then(this.onDatePicked);
-      } else if (mode === 'time') {
-        // 选时间
-
-        let timeMoment = Moment(this.state.date);
-
-        TimePickerAndroid.open({
-          hour: timeMoment.hour(),
-          minute: timeMoment.minutes(),
-          is24Hour: is24Hour,
-          mode: androidMode
-        }).then(this.onTimePicked);
-      } else if (mode === 'datetime') {
-        // 选日期和时间
-
-        DatePickerAndroid.open({
-          date: this.state.date,
-          minDate: minDate && this.getDate(minDate),
-          maxDate: maxDate && this.getDate(maxDate),
-          mode: androidMode
-        }).then(this.onDatetimePicked);
-      }
-    }
+    this.setModalVisible(true);
 
     if (typeof this.props.onOpenModal === 'function') {
       this.props.onOpenModal();
@@ -367,6 +332,29 @@ class DatePicker extends Component {
               <View/>
           }
           {this._renderIcon()}
+          {Platform.OS === 'android' && this.state.modalVisible && (
+            <DateTimePicker
+              value={this.state.date}
+              mode={mode}
+              minimumDate={minDate && this.getDate(minDate)}
+              maximumDate={maxDate && this.getDate(maxDate)}
+              onChange={(_, date) => {
+                if (!date) {
+                  this.onPressCancel();
+                } else {
+                  this.setState({
+                    date,
+                    modalVisible: false,
+                  });
+                  this.onPressConfirm();
+                }
+              }}
+              minuteInterval={minuteInterval}
+              timeZoneOffsetInMinutes={timeZoneOffsetInMinutes ?? null}
+              style={[Style.datePicker, customStyles.datePicker]}
+              locale={locale}
+            />
+          )}
           {Platform.OS === 'ios' && <Modal
             transparent={true}
             animationType="none"
